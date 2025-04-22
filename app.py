@@ -10,14 +10,13 @@ st.set_page_config(page_title="Yatırım Karşılaştırıcı", layout="centered
 st.title("📊 Fon vs Döviz & Altın Karşılaştırma Aracı")
 
 api_key = os.getenv("EXCHANGE_RATE_API_KEY")
-print(f"API Anahtarı: {api_key}")
 
 # Kullanıcıdan veri al
 fon_adi = st.text_input("Fon Adı", value="V Mall Fon")
 alim_tarihi = st.date_input("Alım Tarihi", value=date(2024, 4, 26), max_value=date.today())
-fon_birim_fiyati = st.number_input("Alım Fiyatı (TL)", min_value=0.0, value=20100.0, step=1.0)
+fon_birim_fiyati = st.number_input("Alım Fiyatı (TL)", min_value=0, value=20100, step=1)
 adet = st.number_input("Alınan Adet", min_value=1, value=50, step=1)
-fon_guncel_fiyati = st.number_input("Fonun Güncel Fiyatı (TL)", min_value=0.0, value=35133.0, step=1.0)
+fon_guncel_fiyati = st.number_input("Fonun Güncel Fiyatı (TL)", min_value=0, value=35133, step=1)
 st.info("📌 Not: Seçtiğiniz tarih için altın (XAU) verisi her zaman bulunamayabilir. Bu durumda altın kuru hesaplaması yapılamayabilir.")
 
 
@@ -99,39 +98,39 @@ if submit:
         df = pd.DataFrame([
             {
                 "Yatırım Aracı": fon_adi,
-                "Başlangıç Fiyatı": f"{fon_birim_fiyati:,.2f} TL",
+                "Başlangıç Fiyatı": f"{int(fon_birim_fiyati):,} TL",
                 "Alınan Miktar": f"{adet} Adet",
-                "Güncel Fiyat": f"{fon_guncel_fiyati:,.2f} TL",
-                "Bugünkü Değer (TL)": f"{bugunku_degerler['Fon']:,.2f} TL",
+                "Güncel Fiyat": f"{int(fon_guncel_fiyati):,} TL",
+                "Bugünkü Değer (TL)": f"{int(bugunku_degerler['Fon']):,} TL",
                 "Getiri Oranı (%)": f"%{getiri_oranlari['Fon']:.2f}"
             },
             {
                 "Yatırım Aracı": "USD ($)",
-                "Başlangıç Fiyatı": f"{historical_rates['USD']:,.2f} TL",
-                "Alınan Miktar": f"{alim_miktarlari['USD']:,.2f} $",
-                "Güncel Fiyat": f"{current_rates['USD']:,.2f} TL",
-                "Bugünkü Değer (TL)": f"{bugunku_degerler['USD']:,.2f} TL",
+                "Başlangıç Fiyatı": f"{int(historical_rates['USD']):,} TL",
+                "Alınan Miktar": f"{alim_miktarlari['USD']:,.0f} $",
+                "Güncel Fiyat": f"{int(current_rates['USD']):,} TL",
+                "Bugünkü Değer (TL)": f"{int(bugunku_degerler['USD']):,} TL",
                 "Getiri Oranı (%)": f"%{getiri_oranlari['USD']:.2f}"
             },
             {
                 "Yatırım Aracı": "EUR (€)",
-                "Başlangıç Fiyatı": f"{historical_rates['EUR']:,.2f} TL",
-                "Alınan Miktar": f"{alim_miktarlari['EUR']:,.2f} €",
-                "Güncel Fiyat": f"{current_rates['EUR']:,.2f} TL",
-                "Bugünkü Değer (TL)": f"{bugunku_degerler['EUR']:,.2f} TL",
+                "Başlangıç Fiyatı": f"{int(historical_rates['EUR']):,} TL",
+                "Alınan Miktar": f"{alim_miktarlari['EUR']:,.0f} €",
+                "Güncel Fiyat": f"{int(current_rates['EUR']):,} TL",
+                "Bugünkü Değer (TL)": f"{int(bugunku_degerler['EUR']):,} TL",
                 "Getiri Oranı (%)": f"%{getiri_oranlari['EUR']:.2f}"
             },
             {
                 "Yatırım Aracı": "Ons Altın",
-                "Başlangıç Fiyatı": f"{historical_rates['XAU']:,.2f} TL",
+                "Başlangıç Fiyatı": f"{int(historical_rates['XAU']):,} TL",
                 "Alınan Miktar": f"{alim_miktarlari['XAU']:,.4f} ons",
-                "Güncel Fiyat": f"{current_rates['XAU']:,.2f} TL",
-                "Bugünkü Değer (TL)": f"{bugunku_degerler['XAU']:,.2f} TL",
+                "Güncel Fiyat": f"{int(current_rates['XAU']):,} TL",
+                "Bugünkü Değer (TL)": f"{int(bugunku_degerler['XAU']):,} TL",
                 "Getiri Oranı (%)": f"%{getiri_oranlari['XAU']:.2f}"
             },
         ])
 
         st.success("İşte sonuçlar:")
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df.set_index("Yatırım Aracı"), use_container_width=True)
 
         st.caption("Veriler https://exchangerate.host üzerinden alınmaktadır.")
